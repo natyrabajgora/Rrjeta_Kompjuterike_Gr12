@@ -1,36 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
-    <list default="true" id="4fd86b8e-31d5-4e80-a8d3-2e37f3ac5603" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Rrjeta_Kompjuterike_Gr12.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/downloads/readme_downloads.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/server_files/example.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/server_files/info_test.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/server_files/welcome.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/uploads/readme_uploads.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/data/uploads/sample_uploads.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/projekt_detaje.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/raporti_final.docx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/logs/server_stats.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/run_admin_client.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/run_readonly_client.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/scripts/run_server.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/client/AdminClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/client/BaseClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/client/ReadOnlyClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/comon/Constants.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/comon/MessageUtils.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/comon/Premissions.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/ClientSession.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/FileCommandHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/TraficMonitor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/server/UDPServer.java" afterDir="false" />
+    <list default="true" id="4fd86b8e-31d5-4e80-a8d3-2e37f3ac5603" name="Changes" comment="Initial Commit">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,12 +64,25 @@
       <option name="presentableId" value="Default" />
       <updated>1763048216612</updated>
       <workItem from="1763048217696" duration="25000" />
-      <workItem from="1763048269657" duration="441000" />
+      <workItem from="1763048269657" duration="781000" />
     </task>
+    <task id="LOCAL-00001" summary="Initial Commit">
+      <option name="closed" value="true" />
+      <created>1763048787128</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1763048787128</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial Commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial Commit" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
