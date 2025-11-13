@@ -1,0 +1,2 @@
+This file is used to test the /read, /info, and /list commands.
+Modify or delete it if needed.

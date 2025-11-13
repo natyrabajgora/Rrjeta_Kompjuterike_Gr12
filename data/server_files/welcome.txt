@@ -1,0 +1,3 @@
+Welcome to the UDP Server!
+This is a default file stored on the server.
+You can read this file using the /read welcome.txt command.

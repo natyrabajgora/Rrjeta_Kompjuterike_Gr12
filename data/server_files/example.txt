@@ -1,0 +1,2 @@
+This is an example file.
+You can test /info example.txt or /search example to find this file.
