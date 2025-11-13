@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4fd86b8e-31d5-4e80-a8d3-2e37f3ac5603" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Rrjeta_Kompjuterike_Gr12.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/downloads/readme_downloads.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/server_files/example.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/server_files/info_test.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/server_files/welcome.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/uploads/readme_uploads.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/data/uploads/sample_uploads.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/projekt_detaje.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/docs/raporti_final.docx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/logs/server_stats.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/run_admin_client.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/run_readonly_client.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/scripts/run_server.bat" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/client/AdminClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/client/BaseClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/client/ReadOnlyClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/comon/Constants.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/comon/MessageUtils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/comon/Premissions.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/ClientSession.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/FileCommandHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/TraficMonitor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/server/UDPServer.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
+  <component name="ProjectId" id="35QhUE8zq1gbtUEybNVdlMtaUGe" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "onboarding.tips.debug.path": "C:/Users/online/IdeaProjects/Rrjeta_Kompjuterike_Gr12/src/Main.java",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23339.11" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23339.11" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4fd86b8e-31d5-4e80-a8d3-2e37f3ac5603" name="Changes" comment="" />
+      <created>1763048216612</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1763048216612</updated>
+      <workItem from="1763048217696" duration="25000" />
+      <workItem from="1763048269657" duration="441000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/Main.java</url>
+          <line>11</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
