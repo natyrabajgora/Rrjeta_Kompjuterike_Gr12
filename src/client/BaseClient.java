@@ -1,8 +1,10 @@
 package client;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 
 public abstract class BaseClient {
 
@@ -43,6 +45,16 @@ public abstract class BaseClient {
         } catch (Exception e) {
             System.out.println("Error sending packet!");
         }
+    }
+    protected void sendTextCommand(String text) throws IOException {
+        byte[] data = text.getBytes(StandardCharsets.UTF_8);
+        DatagramPacket packet = new DatagramPacket(
+                data,
+                data.length,
+                serverAddress,
+                serverPort
+        );
+        socket.send(packet);
     }
     protected void sendHello(String roleKeyword){
         sendMessage("HELLO " + getClientIdentifier() + " " + roleKeyword);

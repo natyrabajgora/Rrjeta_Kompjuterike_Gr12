@@ -43,31 +43,27 @@ public class AdminClient extends BaseClient {
     private void executeCommand(String input) {
         try {
             if (input.equals("/list")) {
-                sendMessage("/list");
+                sendTextCommand(input);
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/read ")) {
-                String file = input.substring(6);
-                sendMessage("/read" + file);
+                sendTextCommand(input);
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/delete ")) {
-                String file = input.substring(8);
-                sendMessage("/delete" + file);
+                sendTextCommand(input);
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/search ")) {
-                String key = input.substring(8);
-                sendMessage("/search" + key);
+                sendTextCommand(input);
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/info ")) {
-                String file = input.substring(6);
-                sendMessage("/info" + file);
+                sendTextCommand(input);
                 System.out.println(receiveResponse());
             }
 
