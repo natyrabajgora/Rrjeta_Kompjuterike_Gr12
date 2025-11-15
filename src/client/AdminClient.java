@@ -15,6 +15,8 @@ public class AdminClient extends BaseClient {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("=== ADMIN CLIENT (ID = " + clientId + ") ===");
+        sendHello("ADMIN");
+        System.out.println(receiveResponse());
         System.out.println("Komandat:");
         System.out.println("/list");
         System.out.println("/read <filename>");
@@ -23,11 +25,17 @@ public class AdminClient extends BaseClient {
         System.out.println("/delete <filename>");
         System.out.println("/search <keyword>");
         System.out.println("/info <filename>");
+        System.out.println("stats (komande pa slash per statistikat e serverit)");
         System.out.println("--------------------------------------");
 
         while (true) {
             System.out.print("> ");
             String input = sc.nextLine();
+            if(input.equalsIgnoreCase("stats")){
+                sendMessage("STATS");
+                System.out.println(receiveResponse());
+                continue;
+            }
             executeCommand(input);
         }
     }
@@ -35,31 +43,31 @@ public class AdminClient extends BaseClient {
     private void executeCommand(String input) {
         try {
             if (input.equals("/list")) {
-                sendPacket("LIST", "");
+                sendMessage("/list");
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/read ")) {
                 String file = input.substring(6);
-                sendPacket("READ", file);
+                sendMessage("/read" + file);
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/delete ")) {
                 String file = input.substring(8);
-                sendPacket("DELETE", file);
+                sendMessage("/delete" + file);
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/search ")) {
                 String key = input.substring(8);
-                sendPacket("SEARCH", key);
+                sendMessage("/search" + key);
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/info ")) {
                 String file = input.substring(6);
-                sendPacket("INFO", file);
+                sendMessage("/info" + file);
                 System.out.println(receiveResponse());
             }
 
@@ -69,7 +77,7 @@ public class AdminClient extends BaseClient {
 
             else if (input.startsWith("/download ")) {
                 String file = input.substring(10);
-                sendPacket("DOWNLOAD", file);
+                sendMessage("/download" + file);
                 System.out.println(receiveResponse());
             }
 
@@ -97,7 +105,7 @@ public class AdminClient extends BaseClient {
 
             String base64 = java.util.Base64.getEncoder().encodeToString(bytes);
 
-            sendPacket("UPLOAD", filename + "::" + base64);
+            sendMessage("/upload" + file.getName() + " " + base64);
             System.out.println(receiveResponse());
 
         } catch (Exception e) {
