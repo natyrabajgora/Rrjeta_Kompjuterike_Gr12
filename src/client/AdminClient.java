@@ -112,4 +112,18 @@ public class AdminClient extends BaseClient {
             System.out.println("Gabim ne upload!");
         }
     }
+    public static void main(String[] args) {
+        int clientId = 1;
+
+        if (args.length > 0) {
+            try {
+                clientId = Integer.parseInt(args[0]);
+            } catch (NumberFormatException e) {
+                System.out.println("ID i klientit duhet të jetë numër.");
+                return;
+            }
+        }
+
+        new AdminClient(clientId).start();
+    }
 }

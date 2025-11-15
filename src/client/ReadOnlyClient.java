@@ -44,4 +44,17 @@ public class ReadOnlyClient extends BaseClient {
             }
         }
     }
+        public static void main(String[] args){
+        int clientId = 1;
+
+        if(args.length > 0){
+            try {
+                clientId = Integer.parseInt(args[0]);
+            }catch (NumberFormatException e){
+                System.out.println("ID i klientit duhet te jete numer.");
+                return;
+            }
+        }
+        new ReadOnlyClient(clientId).start();
+        }
 }
