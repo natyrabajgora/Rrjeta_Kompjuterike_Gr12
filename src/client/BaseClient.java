@@ -6,14 +6,16 @@ import java.net.InetAddress;
 
 public abstract class BaseClient {
 
-    protected int clientId;
+    protected final int clientId;
+    protected final String clientIndentifier;
     protected InetAddress serverAddress;
-    protected int serverPort = 9000;
+    protected int serverPort = 5000;
     protected DatagramSocket socket;
 
     public BaseClient(int clientId) {
+        this.clientId = clientId;
+        this.clientIndentifier = "client" + clientId;
         try {
-            this.clientId = clientId;
             this.socket = new DatagramSocket();
             this.serverAddress = InetAddress.getByName("127.0.0.1");
         } catch (Exception e) {
@@ -22,15 +24,15 @@ public abstract class BaseClient {
     }
 
     // e ndreq formatin e mesazhit që serveri e pret
-    protected String buildPacket(String command, String payload) {
-        return clientId + "|" + command + "|" + payload;
+    protected String getClientIdentifier(){
+        return clientIdentifier;
     }
 
     // e qon porosin ne server
-    protected void sendPacket(String command, String payload) {
+    protected void sendMessage(String message) {
         try {
-            String msg = buildPacket(command, payload);
-            byte[] data = msg.getBytes();
+
+            byte[] data = message.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
             DatagramPacket packet = new DatagramPacket(
                     data, data.length, serverAddress, serverPort
@@ -42,6 +44,9 @@ public abstract class BaseClient {
             System.out.println("Error sending packet!");
         }
     }
+    protected void sendHello(String roleKeyword){
+        sendMessage("HELLO " + getClientIdentifier() + " " + roleKeyword);
+    }
 
     // merr pergjigjen nga serveri
     protected String receiveResponse() {
@@ -50,7 +55,7 @@ public abstract class BaseClient {
             DatagramPacket resp = new DatagramPacket(buffer, buffer.length);
 
             socket.receive(resp);
-            return new String(resp.getData(), 0, resp.getLength());
+            return new String(resp.getData(), 0, resp.getLength(), java.nio.charset.StandardCharsets.UTF_8);
 
         } catch (Exception e) {
             return "Error receiving response!";
