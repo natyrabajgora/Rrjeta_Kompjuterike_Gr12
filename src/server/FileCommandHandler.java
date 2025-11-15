@@ -3,7 +3,7 @@ package server;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Objects;
+import java.util.Base64;
 
 public class FileCommandHandler {
 
@@ -198,10 +198,20 @@ public class FileCommandHandler {
         String fileName = parts[1];
         String content = parts[2];
 
-        File file = new File(uploadDir, fileName);
-        Files.writeString(file.toPath(), content);
+        byte[] decoded;
+        try {
+            decoded = Base64.getDecoder().decode(content);
+        } catch (IllegalArgumentException e) {
+            return "ERR Invalid upload payload (expected Base64)";
+        }
 
-        return "OK Uploaded to uploads/" + fileName;
+        File serverFile = new File(serverDir, fileName);
+        Files.write(serverFile.toPath(), decoded);
+
+        File uploadedCopy = new File(uploadDir, fileName);
+        Files.write(uploadedCopy.toPath(), decoded);
+
+       return "OK Uploaded " + fileName + " (" + decoded.length + " bytes)";
     }
 
 
