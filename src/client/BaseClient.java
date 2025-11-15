@@ -7,14 +7,14 @@ import java.net.InetAddress;
 public abstract class BaseClient {
 
     protected final int clientId;
-    protected final String clientIndentifier;
+    protected final String clientIdentifier;
     protected InetAddress serverAddress;
     protected int serverPort = 5000;
     protected DatagramSocket socket;
 
     public BaseClient(int clientId) {
         this.clientId = clientId;
-        this.clientIndentifier = "client" + clientId;
+        this.clientIdentifier = "client" + clientId;
         try {
             this.socket = new DatagramSocket();
             this.serverAddress = InetAddress.getByName("127.0.0.1");

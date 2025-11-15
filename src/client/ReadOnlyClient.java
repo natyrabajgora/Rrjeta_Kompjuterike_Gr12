@@ -13,6 +13,8 @@ public class ReadOnlyClient extends BaseClient {
         Scanner sc = new Scanner(System.in);
 
         System.out.println("=== READ ONLY CLIENT (ID = " + clientId + ") ===");
+        sendHello("READ");
+        System.out.println(receiveResponse());
         System.out.println("Komandat e lejuara: /list, /read <file>, /search <keyword>");
         System.out.println("------------------------------------------------------------");
 
@@ -21,19 +23,19 @@ public class ReadOnlyClient extends BaseClient {
             String input = sc.nextLine();
 
             if (input.equals("/list")) {
-                sendPacket("LIST", "");
+                sendMessage("/list");
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/read ")) {
                 String file = input.substring(6);
-                sendPacket("READ", file);
+                sendMessage("/read" + file);
                 System.out.println(receiveResponse());
             }
 
             else if (input.startsWith("/search ")) {
                 String key = input.substring(8);
-                sendPacket("SEARCH", key);
+               sendMessage("/seach" + key);
                 System.out.println(receiveResponse());
             }
 
