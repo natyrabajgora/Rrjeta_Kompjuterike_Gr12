@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
+import server.ClientSession.Permission;
 
 public class UDPServer {
 
@@ -21,98 +21,15 @@ public class UDPServer {
         public static final int MAX_CLIENTS = 10;                // max lidhje aktive
         public static final long CLIENT_TIMEOUT_MS = 20_000;     // 20 sekonda inaktivitet
         public static final String LOGS_DIR = "logs";
-        public static final String STATS_LOG_FILE = "logs/server_stats.txt";
-        public static final String MSG_LOG_FILE = "logs/messages.log";
+        public static final String STATS_LOG_FILE = LOGS_DIR + "/server_stats.txt";
+        public static final String MSG_LOG_FILE = LOGS_DIR + "/messages.log";
+        public static final String DATA_DIR = "data";
+        public static final String SERVER_FILES_DIR = DATA_DIR + "/server_files";
+        public static final String UPLOADS_DIR = DATA_DIR + "/uploads";
+        public static final String DOWNLOADS_DIR = DATA_DIR + "/downloads";
+
     }
 
-    // ================== ENUM PER PRIVILEGJET ==================
-    public enum Permission {
-        ADMIN,
-        READ_ONLY
-    }
-
-    // ================== TE DHENAT PER NJE KLIENT ==================
-    public static class ClientSession {
-        private final SocketAddress address;
-        private String clientId;
-        private Permission permission;
-        private volatile long lastActive;
-        private final AtomicLong messagesCount = new AtomicLong(0);
-        private final AtomicLong bytesReceived = new AtomicLong(0);
-        private final AtomicLong bytesSent = new AtomicLong(0);
-
-        public ClientSession(SocketAddress address) {
-            this.address = address;
-            this.clientId = address.toString();
-            this.permission = Permission.READ_ONLY;
-            touch();
-        }
-
-        public SocketAddress getAddress() {
-            return address;
-        }
-
-        public String getClientId() {
-            return clientId;
-        }
-
-        public void setClientId(String clientId) {
-            this.clientId = clientId;
-        }
-
-        public Permission getPermission() {
-            return permission;
-        }
-
-        public void setPermission(Permission permission) {
-            this.permission = permission;
-        }
-
-        public long getLastActive() {
-            return lastActive;
-        }
-
-        public long getMessagesCount() {
-            return messagesCount.get();
-        }
-
-        public long getBytesReceived() {
-            return bytesReceived.get();
-        }
-
-        public long getBytesSent() {
-            return bytesSent.get();
-        }
-
-        public void touch() {
-            this.lastActive = System.currentTimeMillis();
-        }
-
-        public void incrementMessages() {
-            messagesCount.incrementAndGet();
-        }
-
-        public void addBytesReceived(int bytes) {
-            bytesReceived.addAndGet(bytes);
-        }
-
-        public void addBytesSent(int bytes) {
-            bytesSent.addAndGet(bytes);
-        }
-
-        @Override
-        public String toString() {
-            return "ClientSession{" +
-                    "address=" + address +
-                    ", clientId='" + clientId + '\'' +
-                    ", permission=" + permission +
-                    ", lastActive=" + Instant.ofEpochMilli(lastActive) +
-                    ", messagesCount=" + messagesCount +
-                    ", bytesReceived=" + bytesReceived +
-                    ", bytesSent=" + bytesSent +
-                    '}';
-        }
-    }
 
     // ================== MONITORIMI I TRAFIKUT ==================
     public static class TrafficMonitor {
@@ -178,6 +95,7 @@ public class UDPServer {
     private DatagramSocket socket;
     private final Map<SocketAddress, ClientSession> sessions = new ConcurrentHashMap<>();
     private final TrafficMonitor trafficMonitor = new TrafficMonitor();
+    private final FileCommandHandler fileCommandHandler = new FileCommandHandler(Constants.SERVER_FILES_DIR, Constants.UPLOADS_DIR, Constants.DOWNLOADS_DIR);
     private final ExecutorService workerPool = Executors.newFixedThreadPool(8);
     private volatile boolean running = false;
 
@@ -318,8 +236,8 @@ public class UDPServer {
             }
         }
 
-        // TODO: Integro FileCommandHandler këtu
-        return "Command received (but not yet implemented): " + commandLine;
+        String role = session.getPermission().name();
+        return fileCommandHandler.handle(commandLine, role);
     }
 
     // ================== LOG I MESAZHEVE ==================
