@@ -1,4 +1,4 @@
-package comon;
+package common;
 
 public class MessageUtils {
     //asdsda

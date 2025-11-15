@@ -1,4 +1,4 @@
-package comon;
+package common;
 
 /**
  * Konstanta të përbashkëta për serverin dhe klientët.

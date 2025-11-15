@@ -1,5 +1,5 @@
-package comon;
+package common;
 
 public class Premissions {
-    //asdasd
+
 }
