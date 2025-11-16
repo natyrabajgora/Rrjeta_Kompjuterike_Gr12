@@ -18,13 +18,39 @@ public class AdminClient extends BaseClient {
     @Override
     public void start() {
         try (Scanner sc = new Scanner(System.in)) {
+            System.out.println("=== ADMIN CLIENT (ID = " + clientId + ") ===");
+            sendHello(Permission.ADMIN);
+            System.out.println(receiveResponse());
+            printMenu();
 
-
-
+            while (true) {
+                System.out.print("> ");
+                if (!sc.hasNextLine()) {
+                    break;
+                }
+                String input = sc.nextLine().trim();
+                if (input.isBlank()) {
+                    continue;
+                }
+                if (isExitCommand(input)) {
+                    System.out.println("Po dal nga klienti...");
+                    break;
+                }
+                if (input.equalsIgnoreCase(CMD_STATS)) {
+                    sendMessage(CMD_STATS);
+                    System.out.println(receiveResponse());
+                    continue;
+                }
+                executeCommand(input);
+            }
+        } finally {
+            try {
+                close();
+            } catch (IOException ignored) {
+            }
         }
-        System.out.println("=== ADMIN CLIENT (ID = " + clientId + ") ===");
-        sendHello("ADMIN");
-        System.out.println(receiveResponse());
+    }
+    public void printMenu(){
         System.out.println("Komandat:");
         System.out.println("/list");
         System.out.println("/read <filename>");
@@ -34,18 +60,8 @@ public class AdminClient extends BaseClient {
         System.out.println("/search <keyword>");
         System.out.println("/info <filename>");
         System.out.println("stats (komande pa slash per statistikat e serverit)");
+        System.out.println(CMD_EXIT + " ose exit për ta mbyllur klientin"); // duhet me konfiguru cmd_exit ne serverconfig hala spodi cka me vendos
         System.out.println("--------------------------------------");
-
-        while (true) {
-            System.out.print("> ");
-            String input = sc.nextLine();
-            if(input.equalsIgnoreCase("stats")){
-                sendMessage("STATS");
-                System.out.println(receiveResponse());
-                continue;
-            }
-            executeCommand(input);
-        }
     }
 
     private void executeCommand(String input) {
