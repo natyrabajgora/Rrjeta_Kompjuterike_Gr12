@@ -144,6 +144,27 @@ public class AdminClient extends BaseClient {
             System.out.println(response);
         }
     }
+    private void persistDownloadedFile(String response) {
+        String normalized = response.replace("\r", "");
+        String[] parts = normalized.split("\n", 4);
+        if (parts.length < 4) {
+            System.out.println(response);
+            return;
+        }
+        String filenameLine = parts[1];
+        String payload = parts[3].trim();
+        String filename = filenameLine.replaceFirst("filename=", "").trim();
+        Path downloadDir = Path.of("data", "client_downloads");
+        try {
+            Files.createDirectories(downloadDir);
+            byte[] bytes = Base64.getDecoder().decode(payload);
+            Path target = downloadDir.resolve(filename);
+            Files.write(target, bytes);
+            System.out.println("File u shkarkua tek " + target.toAbsolutePath());
+        } catch (IOException | IllegalArgumentException e) {
+            System.out.println("Nuk u arrit të ruhej file-i: " + e.getMessage());
+        }
+    }
 
 
     public static void main(String[] args) {
