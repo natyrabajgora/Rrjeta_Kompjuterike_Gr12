@@ -147,31 +147,25 @@ public class FileCommandHandler {
     }
 
     // /search keyword
-    private String handleSearch(String cmd) {
-        String keyword = getSecondArg(cmd);
+    private String handleSearch(String cmd) throws IOException {
+        String keyword = extractSingleArgument(cmd, ServerConfig.CMD_SEARCH);
         if (keyword == null) {
             return "ERR Usage: /search <keyword>";
         }
 
-        keyword = keyword.toLowerCase();
-        StringBuilder sb = new StringBuilder();
-
-        File[] files = serverDir.listFiles();
-        if (files == null || files.length == 0) {
-            return "DATA\n(no files)";
-        }
-
-        for (File f : files) {
-            if (f.isFile() && f.getName().toLowerCase().contains(keyword)) {
-                sb.append(f.getName()).append("\n");
+        String lowerKeyword = keyword.toLowerCase(Locale.ROOT);
+        try (var stream = Files.list(serverDir)) {
+            List<String> matches = stream
+                    .filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString())
+                    .filter(name -> name.toLowerCase(Locale.ROOT).contains(lowerKeyword))
+                    .sorted()
+                    .collect(Collectors.toList());
+            if (matches.isEmpty()) {
+                return "DATA\n(no matches)";
             }
+            return "DATA\n" + String.join("\n", matches);
         }
-
-        if (sb.length() == 0) {
-            return "DATA\n(no matches)";
-        }
-
-        return "DATA\n" + sb;
     }
 
     // ============================
@@ -179,23 +173,19 @@ public class FileCommandHandler {
     // ============================
 
     // /delete filename
-    private String handleDelete(String cmd) {
-        String fileName = getSecondArg(cmd);
+    private String handleDelete(String cmd) throws IOException {
+        String fileName = extractSingleArgument(cmd, ServerConfig.CMD_DELETE);
         if (fileName == null) {
             return "ERR Usage: /delete <filename>";
         }
 
-        File file = new File(serverDir, fileName);
-        if (!file.exists() || !file.isFile()) {
+        Path file = resolveWithin(serverDir, fileName);
+        if (!Files.isRegularFile(file)) {
             return "ERR File not found";
         }
 
-        boolean ok = file.delete();
-        if (ok) {
-            return "OK File deleted";
-        } else {
-            return "ERR Could not delete file";
-        }
+        Files.delete(file);
+        return "OK File deleted";
     }
 
 
