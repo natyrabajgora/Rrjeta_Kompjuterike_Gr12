@@ -46,4 +46,32 @@ public class ServerConfig {
         }
         return DEFAULT_SERVER_HOST;
     }
+
+    public static int resolveServerPort() {
+        String prop = System.getProperty(PROP_SERVER_PORT);
+        Integer parsed = tryParsePort(prop);
+        if (parsed != null) {
+            return parsed;
+        }
+        String env = System.getenv(ENV_SERVER_PORT);
+        parsed = tryParsePort(env);
+        if (parsed != null) {
+            return parsed;
+        }
+        return DEFAULT_SERVER_PORT;
+    }
+    private static Integer tryParsePort(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            int parsed = Integer.parseInt(value.trim());
+            if (parsed <= 0 || parsed > 65535) {
+                return null;
+            }
+            return parsed;
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
 }
