@@ -33,7 +33,7 @@ public class FileCommandHandler {
 
 
     public String handle(String commandLine, String role) {
-        if (commandLine == null || commandLine.isEmpty()) {
+        if (commandLine == null || commandLine.isBlank()) {
             return "ERR Empty command";
         }
 
@@ -80,7 +80,8 @@ public class FileCommandHandler {
             }
 
             return "ERR Unknown command";
-
+        } catch (SecurityException e) {
+            return "ERR " + e.getMessage();
         } catch (Exception e) {
             return "ERR " + e.getClass().getSimpleName() + ": " + e.getMessage();
         }
