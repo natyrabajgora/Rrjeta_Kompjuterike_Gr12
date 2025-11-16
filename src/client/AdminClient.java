@@ -116,30 +116,23 @@ public class AdminClient extends BaseClient {
     }
 
     private void uploadFile(String filename) {
-        try {
-            File file = new File("data/uploads/" + filename);
-
-            System.out.println("Looking for: " + file.getAbsolutePath());
-
-            if (!file.exists()) {
-                System.out.println("File nuk ekziston!");
+        File file = new File(filename);
+        if (!file.exists() || !file.isFile()) {
+            System.out.println("File nuk ekziston!");
+            return;
+        }
+        try (FileInputStream fis = new FileInputStream(file)) {
+            byte[] bytes = fis.readAllBytes();
+            String base64 = Base64.getEncoder().encodeToString(bytes);
+            String payload = CMD_UPLOAD + " " + quoteIfNeeded(file.getName()) + " " + base64;
+            if (payload.getBytes(StandardCharsets.UTF_8).length > BUFFER_SIZE) {
+                System.out.println("File është shumë i madh për t'u dërguar në një paketë UDP. Kufizohet në " + BUFFER_SIZE + " bajte.");
                 return;
             }
-
-            FileInputStream fis = new FileInputStream(file);
-            byte[] bytes = fis.readAllBytes();
-            fis.close();
-
-            String base64 = java.util.Base64.getEncoder().encodeToString(bytes);
-
-            // KY ËSHTË FORMAT IQE PRET SERVERI
-            sendPacket("UPLOAD", file.getName() + " " + base64);
-
+            sendMessage(payload);
             System.out.println(receiveResponse());
-
-        } catch (Exception e) {
-            System.out.println("Gabim ne upload!");
-            e.printStackTrace();
+        }catch(Exception e){
+            System.out.println("Gabim ne upload: " + e.getMessage());
         }
     }
 
