@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Base64;
 
+import static server.ServerConfig.*;
+
 public class AdminClient extends BaseClient {
 
     public AdminClient(int clientId) {
@@ -66,39 +68,42 @@ public class AdminClient extends BaseClient {
 
     private void executeCommand(String input) {
         try {
-            if (input.equals("/list")) {
-                sendTextCommand(input);
+            if (input.equals(CMD_LIST)) {
+                sendTextCommand(CMD_LIST);
                 System.out.println(receiveResponse());
             }
 
-            else if (input.startsWith("/read ")) {
-                sendTextCommand(input);
+            else if (input.startsWith(CMD_READ + " ")) {
+                String file = input.substring(CMD_READ.length() + 1).trim();
+                sendMessage(CMD_READ + " " + quoteIfNeeded(file));
                 System.out.println(receiveResponse());
             }
 
-            else if (input.startsWith("/delete ")) {
-                sendTextCommand(input);
+            else if (input.startsWith(CMD_DELETE + " "))  {
+                String file = input.substring(CMD_DELETE.length() + 1).trim();
+                sendMessage(CMD_DELETE + " " + quoteIfNeeded(file));
                 System.out.println(receiveResponse());
             }
 
-            else if (input.startsWith("/search ")) {
-                sendTextCommand(input);
+            else if (input.startsWith(CMD_SEARCH + " ")) {
+                String key = input.substring(CMD_SEARCH.length() + 1).trim();
+                sendMessage(CMD_SEARCH + " " + quoteIfNeeded(key));
                 System.out.println(receiveResponse());
             }
 
-            else if (input.startsWith("/info ")) {
-                sendTextCommand(input);
+            else if (input.startsWith(CMD_INFO + " ")) {
+                String file = input.substring(CMD_INFO.length() + 1).trim();
+                sendMessage(CMD_INFO + " " + quoteIfNeeded(file));
                 System.out.println(receiveResponse());
             }
 
-            else if (input.startsWith("/upload ")) {
-                uploadFile(input.substring(8));
+            else if (input.startsWith(CMD_UPLOAD + " ")) {
+                uploadFile(input.substring(CMD_UPLOAD.length() + 1).trim());
             }
 
-            else if (input.startsWith("/download ")) {
-                String file = input.substring(10);
-                sendMessage("/download" + file);
-                System.out.println(receiveResponse());
+            else if (input.startsWith(CMD_DOWNLOAD + " "))  {
+                String file = input.substring(CMD_DOWNLOAD.length() + 1).trim();
+                handleDownload(file);
             }
 
             else {
