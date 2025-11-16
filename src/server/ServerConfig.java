@@ -1,6 +1,10 @@
 package server;
 
-public class ServerConfig {
+public final class ServerConfig {
+
+    private ServerConfig() {
+    }
+
     public static final int SERVER_PORT = 5000;
     public static final String DEFAULT_SERVER_HOST = "127.0.0.1";
     public static final int DEFAULT_SERVER_PORT = 5000;
@@ -11,7 +15,7 @@ public class ServerConfig {
     public static final String PROP_SERVER_HOST = "udp.server.host";
     public static final String PROP_SERVER_PORT = "udp.server.port";
 
-    public static final int MAX_CLIENTS = 4;
+    public static final int MAX_CLIENTS = 10;
     public static final long CLIENT_TIMEOUT_MS = 20_000L;
 
     public static final String LOGS_DIR = "logs";
@@ -33,8 +37,6 @@ public class ServerConfig {
     public static final String CMD_DELETE = "/delete";
     public static final String CMD_SEARCH = "/search";
     public static final String CMD_INFO = "/info";
-    public static final String CMD_EXIT = "/exit";
-
 
     public static String resolveServerHost() {
         String prop = System.getProperty(PROP_SERVER_HOST);
@@ -61,6 +63,7 @@ public class ServerConfig {
         }
         return DEFAULT_SERVER_PORT;
     }
+
     private static Integer tryParsePort(String value) {
         if (value == null || value.isBlank()) {
             return null;
