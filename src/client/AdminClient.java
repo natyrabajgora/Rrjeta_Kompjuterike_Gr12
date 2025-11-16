@@ -135,6 +135,15 @@ public class AdminClient extends BaseClient {
             System.out.println("Gabim ne upload: " + e.getMessage());
         }
     }
+    private void handleDownload(String file) {
+        sendMessage(CMD_DOWNLOAD + " " + quoteIfNeeded(file));
+        String response = receiveResponse();
+        if (response.startsWith("DATA_BASE64")) {
+            persistDownloadedFile(response);
+        } else {
+            System.out.println(response);
+        }
+    }
 
 
     public static void main(String[] args) {
