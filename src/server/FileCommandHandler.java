@@ -108,18 +108,22 @@ public class FileCommandHandler {
 
     // /read filename
     private String handleRead(String cmd) throws IOException {
-        String fileName = getSecondArg(cmd);
+        String fileName = extractSingleArgument(cmd, ServerConfig.CMD_READ);
         if (fileName == null) {
             return "ERR Usage: /read <filename>";
         }
 
-        File file = new File(serverDir, fileName);
-        if (!file.exists() || !file.isFile()) {
+        Path file = resolveWithin(serverDir, fileName);
+        if (!Files.isRegularFile(file)) {
             return "ERR File not found";
         }
 
-        String content = Files.readString(file.toPath());
-        return "DATA\n" + content;
+        byte[] bytes = Files.readAllBytes(file);
+        if (isProbablyText(bytes)) {
+            return "DATA\n" + new String(bytes, StandardCharsets.UTF_8);
+        }
+        String base64 = Base64.getEncoder().encodeToString(bytes);
+        return buildBase64Response(file, bytes, base64);
     }
 
     // /info filename
