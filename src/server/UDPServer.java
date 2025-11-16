@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import server.ClientSession.Permission;
-
+import java.util.concurrent.atomic.AtomicInteger;
 public class UDPServer {
 
     // ================== KONSTANTAT BAZË ==================
@@ -97,13 +97,15 @@ public class UDPServer {
     private final TrafficMonitor trafficMonitor = new TrafficMonitor();
     private final FileCommandHandler fileCommandHandler = new FileCommandHandler(Constants.SERVER_FILES_DIR, Constants.UPLOADS_DIR, Constants.DOWNLOADS_DIR);
     private final ExecutorService workerPool = Executors.newFixedThreadPool(8);
+    private final AtomicInteger activeClientCount = new AtomicInteger(0);
     private volatile boolean running = false;
 
     // ================== METODA START ==================
     public void start() throws SocketException {
-        socket = new DatagramSocket(Constants.SERVER_PORT);
+        int port = ServerConfig.resolveServerPort();
+        socket = new DatagramSocket(port);
         running = true;
-        System.out.println("UDP Server started on port " + Constants.SERVER_PORT);
+        System.out.println("UDP Server started on port " + port + " (host " + ServerConfig.resolveServerHost() + ")");
 
         startIdleChecker();
         startConsoleHint();
@@ -142,9 +144,9 @@ public class UDPServer {
                 return existing;
             }
             // klient i ri
-            if (sessions.size() >= Constants.MAX_CLIENTS) {
-                // refuzo lidhje të reja
-                sendString("SERVER BUSY: Too many active clients.", clientAddress);
+            int newCount = activeClientCount.incrementAndGet();
+            if (newCount > ServerConfig.MAX_CLIENTS) { // refuzo lidhje te reja
+                activeClientCount.decrementAndGet();
                 return null;
             }
             ClientSession newSession = new ClientSession(addr);
@@ -153,7 +155,7 @@ public class UDPServer {
         });
 
         if (session == null) {
-            // ose ishte i refuzuar
+            sendString("SERVER BUSY: Too many active clients.", clientAddress);
             return;
         }
 
@@ -170,10 +172,19 @@ public class UDPServer {
             handleHello(session, message, clientAddress);
             return;
         }
+        if (!session.isAuthenticated()) {
+            sendString("ERR Ju lutem identifikohuni me HELLO <clientId> <ADMIN|READ>", clientAddress);
+            return;
+        }
+
 
         // Komanda STATS
-        if (message.equalsIgnoreCase("STATS")) {
-            handleStatsCommand(clientAddress);
+        if (ServerConfig.CMD_STATS.equalsIgnoreCase(message)) {
+            if (!session.getPermission().isAdmin()) {
+                sendString("ERR Permission denied (admin only)", clientAddress);
+                return;
+            }
+            handleStatsCommand(session);
             return;
         }
 
@@ -186,8 +197,7 @@ public class UDPServer {
         }
 
         // Nëse nuk është komandë, vetëm echo + info
-        String echo = "Server received (" + session.getPermission() + "): " + message;
-        sendString(echo, clientAddress);
+        sendString("ERR Unknown command. Përdor komandat që fillojnë me '/'", clientAddress);
     }
 
     // ================== HELLO / AUTH ==================
