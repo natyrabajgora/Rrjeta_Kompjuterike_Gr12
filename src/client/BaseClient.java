@@ -7,23 +7,49 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import server.ServerConfig;
+import java.io.Closeable;
+import java.io.IOException;
 
-public abstract class BaseClient {
-
+public abstract class BaseClient implements Closeable {
+    public static final int BUFFER_SIZE = ServerConfig.BUFFER_SIZE;
+    private static final String CMD_EXIT = "/exit";
     protected final int clientId;
     protected final String clientIdentifier;
-    protected InetAddress serverAddress;
-    protected int serverPort = 5000;
-    protected DatagramSocket socket;
+    protected final InetAddress serverAddress;
+    protected final int serverPort;
+    protected final DatagramSocket socket;
+    private static final int SOCKET_TIMEOUT_MS = 5_000;
+
+    protected enum Permission {
+        ADMIN("ADMIN"),
+        READ_ONLY("READ_ONLY");
+
+        private final String keyword;
+
+        Permission(String keyword) {
+            this.keyword = keyword;
+        }
+
+        public String keyword() {
+            return keyword;
+        }
+
+        public boolean isAdmin() {
+            return this == ADMIN;
+        }
+    }
 
     public BaseClient(int clientId) {
         this.clientId = clientId;
         this.clientIdentifier = "client" + clientId;
         try {
+            this.serverAddress = InetAddress.getByName(ServerConfig.resolveServerHost());
+            this.serverPort = ServerConfig.resolveServerPort();
             this.socket = new DatagramSocket();
-            this.serverAddress = InetAddress.getByName("127.0.0.1");
+            this.socket.setSoTimeout(SOCKET_TIMEOUT_MS);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new IllegalStateException("Nuk mund të inicializohet klienti: " + e.getMessage(), e);
         }
     }
 
@@ -32,12 +58,22 @@ public abstract class BaseClient {
         return clientIdentifier;
     }
 
+    protected boolean isExitCommand(String input) {
+        if (input == null) {
+            return false;
+        }
+        return CMD_EXIT.equalsIgnoreCase(input.trim()) ||
+                "exit".equalsIgnoreCase(input.trim()) ||
+                "quit".equalsIgnoreCase(input.trim());
+    }
+
     // e qon porosin ne server
     protected void sendMessage(String message) {
+        if (message == null || message.isBlank()) {
+            return;
+        }
         try {
-
-            byte[] data = message.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-
+            byte[] data = message.getBytes(StandardCharsets.UTF_8);
             DatagramPacket packet = new DatagramPacket(
                     data, data.length, serverAddress, serverPort
             );
@@ -45,7 +81,7 @@ public abstract class BaseClient {
             socket.send(packet);
 
         } catch (Exception e) {
-            System.out.println("Error sending packet!");
+            System.out.println("Error sending packet: " + e.getMessage());
         }
     }
     protected void sendTextCommand(String text) throws IOException {
