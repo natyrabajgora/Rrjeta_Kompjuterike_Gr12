@@ -21,7 +21,7 @@ public class AdminClient extends BaseClient {
     public void start() {
         try (Scanner sc = new Scanner(System.in)) {
             System.out.println("=== ADMIN CLIENT (ID = " + clientId + ") ===");
-            sendHello(Permission.ADMIN);
+            sendHello(String.valueOf(Permission.ADMIN));
             System.out.println(receiveResponse());
             printMenu();
 

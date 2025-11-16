@@ -15,7 +15,7 @@ public class ReadOnlyClient extends BaseClient {
     public void start() {
         try (Scanner sc = new Scanner(System.in)) {
             System.out.println("=== READ ONLY CLIENT (ID = " + clientId + ") ===");
-            sendHello(Permission.READ_ONLY);
+            sendHello(String.valueOf(Permission.READ_ONLY));
             System.out.println(receiveResponse());
             System.out.println("Komandat e lejuara: " + CMD_LIST + ", " +
                     CMD_READ + " <file>, " + CMD_SEARCH + " <keyword>");

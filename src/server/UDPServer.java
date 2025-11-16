@@ -12,6 +12,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 import server.ClientSession.Permission;
 import java.util.concurrent.atomic.AtomicInteger;
+import static server.ClientSession.Permission.*;
+
 public class UDPServer {
 
     // ================== KONSTANTAT BAZË ==================
@@ -180,7 +182,7 @@ public class UDPServer {
 
         // Komanda STATS
         if (ServerConfig.CMD_STATS.equalsIgnoreCase(message)) {
-            if (!session.getPermission().isAdmin()) {
+            if (!session.getPermission().equals(ADMIN)) {
                 sendString("ERR Permission denied (admin only)", clientAddress);
                 return;
             }
@@ -214,6 +216,40 @@ public class UDPServer {
         sendString(reply, address);
     }
 
+    private HelloPayload parseHello(String message) {
+        if (message == null || message.isBlank()) {
+            return null;
+        }
+
+        // Prishet mesazhi sipas hapësirave
+        String[] parts = message.trim().split("\\s+");
+
+        // Format i pritshëm: HELLO <clientId> <ADMIN|READ>
+        if (parts.length != 3) {
+            return null;  // format i gabuar
+        }
+
+        // Kontrollo komandën
+        if (!parts[0].equalsIgnoreCase("HELLO")) {
+            return null;
+        }
+
+        String clientId = parts[1];
+        String roleString = parts[2].toUpperCase();
+
+        ClientSession.Permission role;
+
+        try {
+            // ADMIN ose READ
+            role = ClientSession.Permission.valueOf(roleString);
+        } catch (IllegalArgumentException e) {
+            return null; // role i gabuar
+        }
+
+        // Kthe payload-in e strukturuar
+        return new HelloPayload(clientId, role);
+    }
+
     // ================== STATS KOMANDA ==================
     private void handleStatsCommand(ClientSession requester) {
         String stats = trafficMonitor.buildStats(sessions);
@@ -234,7 +270,7 @@ public class UDPServer {
 
         // Shembull kontrolli për admin only:
         if (commandLine.startsWith("/delete") || commandLine.startsWith("/upload")) {
-            if (session.getPermission() != Permission.ADMIN) {
+            if (session.getPermission() != ADMIN) {
                 return "ERROR: You do not have permission to execute this command.";
             }
         }
@@ -309,7 +345,7 @@ public class UDPServer {
             activeClientCount.decrementAndGet();
         }
     }
-
+    private record HelloPayload(String clientId, ClientSession.Permission role) { }
     // ================== MAIN ==================
     public static void main(String[] args) {
         UDPServer server = new UDPServer();

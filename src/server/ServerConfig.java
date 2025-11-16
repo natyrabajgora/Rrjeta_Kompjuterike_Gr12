@@ -37,6 +37,8 @@ public final class ServerConfig {
     public static final String CMD_DELETE = "/delete";
     public static final String CMD_SEARCH = "/search";
     public static final String CMD_INFO = "/info";
+    public static final String CMD_EXIT = "/exit";
+
 
     public static String resolveServerHost() {
         String prop = System.getProperty(PROP_SERVER_HOST);
