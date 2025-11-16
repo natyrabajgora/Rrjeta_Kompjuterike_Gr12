@@ -202,31 +202,24 @@ public class UDPServer {
 
     // ================== HELLO / AUTH ==================
     private void handleHello(ClientSession session, String message, SocketAddress address) {
-        try {
-            String[] parts = message.split("\\s+");
-            if (parts.length >= 3) {
-                String clientId = parts[1];
-                String roleStr = parts[2].toUpperCase();
-
-                session.setClientId(clientId);
-                Permission perm = roleStr.equals("ADMIN") ? Permission.ADMIN : Permission.READ_ONLY;
-                session.setPermission(perm);
-                String reply = "HELLO " + clientId + ", role set to " + perm;
-                sendString(reply, address);
-            } else {
-                sendString("Usage: HELLO <clientId> <ADMIN|READ>", address);
-            }
-        } catch (Exception e) {
-            sendString("Error in HELLO command: " + e.getMessage(), address);
+        HelloPayload payload = parseHello(message);
+        if (payload == null) {
+            sendString("Usage: " + ServerConfig.CMD_HELLO + " <clientId> <ADMIN|READ>", address);
+            return;
         }
+        session.setClientId(payload.clientId());
+        session.setPermission(payload.role());
+        session.markAuthenticated();
+        String reply = ServerConfig.CMD_HELLO + " " + payload.clientId() + ", role set to " + payload.role();
+        sendString(reply, address);
     }
 
     // ================== STATS KOMANDA ==================
-    private void handleStatsCommand(SocketAddress requester) {
+    private void handleStatsCommand(ClientSession requester) {
         String stats = trafficMonitor.buildStats(sessions);
         System.out.println(stats);
         trafficMonitor.appendStatsToFile(stats);
-        sendString(stats, requester);
+        sendString(stats, requester.getAddress());
     }
 
     // ================== TRAJTIMI I KOMANDAVE /list, /read, ... ==================
@@ -290,7 +283,7 @@ public class UDPServer {
                         ClientSession session = entry.getValue();
                         if (now - session.getLastActive() > Constants.CLIENT_TIMEOUT_MS) {
                             System.out.println("Client timed out and removed: " + session);
-                            sessions.remove(entry.getKey());
+                            removeSession(entry.getKey());
                         }
                     }
 
@@ -309,6 +302,12 @@ public class UDPServer {
     private void startConsoleHint() {
         // thjesht për me tregu se ekziston komanda STATS
         System.out.println("Tip: Clients can send 'STATS' to receive server statistics.");
+    }
+    private void removeSession(SocketAddress address) {
+        ClientSession removed = sessions.remove(address);
+        if (removed != null) {
+            activeClientCount.decrementAndGet();
+        }
     }
 
     // ================== MAIN ==================
