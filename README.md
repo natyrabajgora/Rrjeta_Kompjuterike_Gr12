@@ -5,10 +5,10 @@ Ky projekt implementon një **UDP File Server** me dy lloje klientësh (**ADMIN*
 ---
 
 ## 👥 Grupi 12
-- Vesa  
-- Anëtari 2  
-- Anëtari 3  
-- Anëtari 4  
+- Natyra Bajgora 
+- Vesa Hadergjonaj
+- Erion Troni
+- Leon Troni
 
 ---
 
@@ -21,7 +21,7 @@ Serveri punon në:
 
 ### ✔ 2. Pranimi i shumë klientëve  
 Serveri pranon deri në **10 klientë aktivë**.  
-Mbi kufi → refuzon lidhjet me mesazhin:
+Mbi kufi → refuzon lidhjet me mesazhin: SERVER BUSY: Too many active clients.
 
 ### ✔ 3. Menaxhimi i kërkesave  
 Çdo klient dërgon komanda UDP dhe serveri i përpunon ato përmes:
@@ -30,7 +30,7 @@ Mbi kufi → refuzon lidhjet me mesazhin:
 - `ThreadPool` (për performancë më të mirë)
 
 ### ✔ 4. Ruajtja e mesazheve  
-Të gjitha mesazhet regjistrohen në:
+Të gjitha mesazhet regjistrohen në: logs/messages.log
 
 ### ✔ 5. Timeout i klientëve joaktivë  
 Nëse klienti nuk dërgon mesazhe për **20 sekonda**, ai largohet automatikisht.  
@@ -38,14 +38,15 @@ Nëse lidhet sërish → rigjenerohet sesioni.
 
 ### ✔ 6. Qasje e plotë për ADMIN  
 Identifikimi bëhet me:
+HELLO client1 ADMIN
+HELLO client2 READ
 
 Admin ka qasje të plotë (read/write/delete/upload/download).
 
 ### ✔ 7. Monitorim trafiku në kohë reale  
-Komanda:
+Komanda: STATS
 
 Tregon:
-
 - numrin e lidhjeve aktive  
 - IP-të e klientëve  
 - mesazhet për klient  
@@ -77,6 +78,9 @@ Statistikat ruhen edhe te:
 
 ## 🔹 ReadOnlyClient
 Lejohet vetëm:
+/list
+/read <file>
+/search <keyword>
 
 # 🔌 Funksionaliteti i klientit
 
@@ -91,11 +95,11 @@ Klienti:
 
 # 🚀 Ekzekutimi
 
-### Nis serverin:
+### Nis serverin: java server.UDPServer
 
-### Nis AdminClient:
+### Nis AdminClient: java client.AdminClient 1
 
-### Nis ReadOnlyClient:
+### Nis ReadOnlyClient: java client.ReadOnlyClient 2
 
 ---
 
