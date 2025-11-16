@@ -4,25 +4,31 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Base64;
-
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 public class FileCommandHandler {
 
-    private final File serverDir;
-    private final File uploadDir;
-    private final File downloadDir;
+    private final Path serverDir;
+    private final Path uploadDir;
+    private final Path downloadDir;
 
     public FileCommandHandler() {
         this("data/server_files", "data/uploads", "data/downloads");
     }
 
     public FileCommandHandler(String serverPath, String uploadPath, String downloadPath) {
-        this.serverDir = new File(serverPath);
-        this.uploadDir = new File(uploadPath);
-        this.downloadDir = new File(downloadPath);
-
-        serverDir.mkdirs();
-        uploadDir.mkdirs();
-        downloadDir.mkdirs();
+        try {
+            this.serverDir = ensureDir(serverPath);
+            this.uploadDir = ensureDir(uploadPath);
+            this.downloadDir = ensureDir(downloadPath);
+        } catch (IOException e) {
+            throw new IllegalStateException("Nuk mund të krijohen direktoriumet e serverit", e);
+        }
     }
 
 
