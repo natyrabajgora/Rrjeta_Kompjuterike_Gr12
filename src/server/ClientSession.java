@@ -20,6 +20,7 @@ public class ClientSession {
     private final SocketAddress address;     // IP + PORT i klientit
     private String clientId;                 // Vendoset me HELLO clientX ADMIN/READ
     private Permission permission;           // ADMIN ose READ_ONLY
+    private volatile boolean authenticated;
 
     private volatile long lastActive;        // Timestamp i mesazhit të fundit
 
@@ -35,7 +36,7 @@ public class ClientSession {
         this.address = address;
         this.clientId = "UNKNOWN"; // derisa të vijë HELLO
         this.permission = Permission.READ_ONLY;
-
+        this.authenticated = false;
         this.lastActive = System.currentTimeMillis();
 
         this.messagesCount = new AtomicLong(0);
@@ -56,6 +57,9 @@ public class ClientSession {
 
     public Permission getPermission() {
         return permission;
+    }
+    public boolean isAuthenticated() {
+        return authenticated;
     }
 
     public long getLastActive() {
@@ -83,6 +87,10 @@ public class ClientSession {
 
     public void setPermission(Permission permission) {
         this.permission = permission;
+    }
+
+    public void markAuthenticated() {
+        this.authenticated = true;
     }
 
     // ======================
@@ -113,6 +121,7 @@ public class ClientSession {
                 "\n  Address        = " + address +
                 "\n  Client ID      = " + clientId +
                 "\n  Permission     = " + permission +
+                "\n  Authenticated  = " + authenticated +
                 "\n  Last Active    = " + Instant.ofEpochMilli(lastActive) +
                 "\n  Messages Count = " + messagesCount.get() +
                 "\n  Bytes Received = " + bytesReceived.get() +

@@ -12,9 +12,10 @@ import server.ServerConfig;
 import java.io.Closeable;
 import java.io.IOException;
 
+import static server.ServerConfig.*;
+
 public abstract class BaseClient implements Closeable {
     public static final int BUFFER_SIZE = ServerConfig.BUFFER_SIZE;
-    private static final String CMD_EXIT = "/exit";
     protected final int clientId;
     protected final String clientIdentifier;
     protected final InetAddress serverAddress;

@@ -1,6 +1,9 @@
 package client;
 
+import java.io.IOException;
 import java.util.Scanner;
+
+import static server.ServerConfig.*;
 
 public class ReadOnlyClient extends BaseClient {
 
@@ -10,37 +13,47 @@ public class ReadOnlyClient extends BaseClient {
 
     @Override
     public void start() {
-        Scanner sc = new Scanner(System.in);
-
-        System.out.println("=== READ ONLY CLIENT (ID = " + clientId + ") ===");
-        sendHello("READ");
-        System.out.println(receiveResponse());
-        System.out.println("Komandat e lejuara: /list, /read <file>, /search <keyword>");
-        System.out.println("------------------------------------------------------------");
+        try (Scanner sc = new Scanner(System.in)) {
+            System.out.println("=== READ ONLY CLIENT (ID = " + clientId + ") ===");
+            sendHello(Permission.READ_ONLY);
+            System.out.println(receiveResponse());
+            System.out.println("Komandat e lejuara: " + CMD_LIST + ", " +
+                    CMD_READ + " <file>, " + CMD_SEARCH + " <keyword>");
+            System.out.println(CMD_EXIT + " ose exit/quit për ta mbyllur");
+            System.out.println("------------------------------------------------------------");
 
         while (true) {
             System.out.print("> ");
-            String input = sc.nextLine();
-
-            if (input.equals("/list")) {
-                sendMessage("/list");
-                System.out.println(receiveResponse());
+            if (!sc.hasNextLine()) {
+                break;
             }
-
-            else if (input.startsWith("/read ")) {
-                String file = input.substring(6);
-                sendMessage("/read" + file);
-                System.out.println(receiveResponse());
+            String input = sc.nextLine().trim();
+            if (input.isBlank()) {
+                continue;
             }
-
-            else if (input.startsWith("/search ")) {
-                String key = input.substring(8);
-               sendMessage("/seach" + key);
-                System.out.println(receiveResponse());
+            if (isExitCommand(input)) {
+                System.out.println("Po e mbyll klientin read-only...");
+                break;
             }
-
-            else {
+            if (input.equals(CMD_LIST)) {
+                sendMessage(CMD_LIST);
+                System.out.println(receiveResponse());
+            } else if (input.startsWith(CMD_READ + " ")) {
+                String file = input.substring(CMD_READ.length() + 1).trim();
+                sendMessage(CMD_READ + " " + quoteIfNeeded(file));
+                System.out.println(receiveResponse());
+            } else if (input.startsWith(CMD_SEARCH + " ")) {
+                String key = input.substring(CMD_SEARCH.length() + 1).trim();
+                sendMessage(CMD_SEARCH + " " + quoteIfNeeded(key));
+                System.out.println(receiveResponse());
+            } else {
                 System.out.println("Nuk ke autorizim për këtë komandë.");
+            }
+        }
+        }finally{
+            try {
+                close();
+            } catch (IOException ignored) {
             }
         }
     }
