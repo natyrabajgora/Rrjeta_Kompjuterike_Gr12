@@ -3,6 +3,11 @@ package client;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Scanner;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
 
 public class AdminClient extends BaseClient {
 
@@ -12,8 +17,11 @@ public class AdminClient extends BaseClient {
 
     @Override
     public void start() {
-        Scanner sc = new Scanner(System.in);
+        try (Scanner sc = new Scanner(System.in)) {
 
+
+
+        }
         System.out.println("=== ADMIN CLIENT (ID = " + clientId + ") ===");
         sendHello("ADMIN");
         System.out.println(receiveResponse());
