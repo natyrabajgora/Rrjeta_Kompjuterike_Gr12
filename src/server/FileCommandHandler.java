@@ -193,29 +193,23 @@ public class FileCommandHandler {
         // args pritet me qenë:
         // "tessst.txt SGVsbG8AAA..."  (file + base64)
 
-        String[] parts = args.split(" ", 2);  // VETËM 2 pjesë: emri + base64
-
-        if (parts.length < 2) {
-            return "ERR Usage: /upload <filename>";
+        UploadPayload payload = parseUpload(cmd);
+        if (payload == null) {
+            return "ERR Usage: " + ServerConfig.CMD_UPLOAD + " <filename> <content>";
         }
-
-        String fileName = parts[0];
-        String content  = parts[1];
-
+        Path serverFile = resolveWithin(serverDir, payload.fileName());
         byte[] decoded;
         try {
-            decoded = Base64.getDecoder().decode(content);
+            decoded = Base64.getDecoder().decode(payload.base64());
         } catch (IllegalArgumentException e) {
             return "ERR Invalid upload payload (expected Base64)";
         }
 
-        File serverFile = new File(serverDir, fileName);
-        Files.write(serverFile.toPath(), decoded);
+        Files.write(serverFile, decoded);
+        Path uploadedCopy = resolveWithin(uploadDir, serverFile.getFileName().toString());
+        Files.write(uploadedCopy, decoded);
 
-        File uploadedCopy = new File(uploadDir, fileName);
-        Files.write(uploadedCopy.toPath(), decoded);
-
-        return "OK Uploaded " + fileName + " (" + decoded.length + " bytes)";
+        return "OK Uploaded " + serverFile.getFileName() + " (" + decoded.length + " bytes)";
     }
 
 
