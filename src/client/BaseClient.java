@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import server.ServerConfig;
 import java.io.Closeable;
@@ -118,11 +119,30 @@ public abstract class BaseClient implements Closeable {
             DatagramPacket resp = new DatagramPacket(buffer, buffer.length);
 
             socket.receive(resp);
-            return new String(resp.getData(), 0, resp.getLength(), java.nio.charset.StandardCharsets.UTF_8);
+            return new String(resp.getData(), 0, resp.getLength(), StandardCharsets.UTF_8);
 
-        } catch (Exception e) {
-            return "Error receiving response!";
+        } catch (SocketTimeoutException e) {
+            return "ERR Server nuk u përgjigj në kohë (timeout).";
+        }catch (Exception e){
+            return "ERR gjatë marrjes së përgjigjes: " + e.getMessage();
         }
+    }
+    @Override
+    public void close() throws IOException {
+        socket.close();
+    }
+    protected String quoteIfNeeded(String value) {
+        if (value == null) {
+            return "";
+        }
+        String trimmed = value.trim();
+        if (trimmed.isEmpty()) {
+            return trimmed;
+        }
+        if (trimmed.contains(" ") && !(trimmed.startsWith("\"") && trimmed.endsWith("\""))) {
+            return '"' + trimmed + '"';
+        }
+        return trimmed;
     }
 
     // do te implementohet te AdminClient dhe ReadOnlyClient
