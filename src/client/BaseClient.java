@@ -60,6 +60,19 @@ public abstract class BaseClient {
         sendMessage("HELLO " + getClientIdentifier() + " " + roleKeyword);
     }
 
+    protected void sendPacket(String op, String payload) throws IOException {
+        // Nderto mesazhin qe do te dergohet te serveri
+        String message;
+        if (payload == null || payload.isBlank()) {
+            message = op;
+        } else {
+            message = op + " " + payload;
+        }
+
+        // Përdor sendMessage ekzistues për ta dërguar
+        sendMessage(message);
+    }
+
     // merr pergjigjen nga serveri
     protected String receiveResponse() {
         try {

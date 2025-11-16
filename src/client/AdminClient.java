@@ -88,7 +88,9 @@ public class AdminClient extends BaseClient {
 
     private void uploadFile(String filename) {
         try {
-            File file = new File(filename);
+            File file = new File("data/uploads/" + filename);
+
+            System.out.println("Looking for: " + file.getAbsolutePath());
 
             if (!file.exists()) {
                 System.out.println("File nuk ekziston!");
@@ -101,13 +103,18 @@ public class AdminClient extends BaseClient {
 
             String base64 = java.util.Base64.getEncoder().encodeToString(bytes);
 
-            sendMessage("/upload" + file.getName() + " " + base64);
+            // KY ËSHTË FORMAT IQE PRET SERVERI
+            sendPacket("UPLOAD", file.getName() + " " + base64);
+
             System.out.println(receiveResponse());
 
         } catch (Exception e) {
             System.out.println("Gabim ne upload!");
+            e.printStackTrace();
         }
     }
+
+
     public static void main(String[] args) {
         int clientId = 1;
 

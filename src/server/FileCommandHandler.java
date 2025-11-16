@@ -189,14 +189,18 @@ public class FileCommandHandler {
     }
 
 
-    private String handleUpload(String cmd) throws IOException {
-        String[] parts = cmd.split(" ", 3);
-        if (parts.length < 3) {
-            return "ERR Usage: /upload <filename> <content>";
+    private String handleUpload(String args) throws IOException {
+        // args pritet me qenë:
+        // "tessst.txt SGVsbG8AAA..."  (file + base64)
+
+        String[] parts = args.split(" ", 2);  // VETËM 2 pjesë: emri + base64
+
+        if (parts.length < 2) {
+            return "ERR Usage: /upload <filename>";
         }
 
-        String fileName = parts[1];
-        String content = parts[2];
+        String fileName = parts[0];
+        String content  = parts[1];
 
         byte[] decoded;
         try {
@@ -211,8 +215,10 @@ public class FileCommandHandler {
         File uploadedCopy = new File(uploadDir, fileName);
         Files.write(uploadedCopy.toPath(), decoded);
 
-       return "OK Uploaded " + fileName + " (" + decoded.length + " bytes)";
+        return "OK Uploaded " + fileName + " (" + decoded.length + " bytes)";
     }
+
+
 
 
     private String handleDownload(String cmd) throws IOException {
