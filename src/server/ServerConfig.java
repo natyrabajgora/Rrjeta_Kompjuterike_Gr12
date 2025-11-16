@@ -33,4 +33,17 @@ public class ServerConfig {
     public static final String CMD_DELETE = "/delete";
     public static final String CMD_SEARCH = "/search";
     public static final String CMD_INFO = "/info";
+
+
+    public static String resolveServerHost() {
+        String prop = System.getProperty(PROP_SERVER_HOST);
+        if (prop != null && !prop.isBlank()) {
+            return prop.trim();
+        }
+        String env = System.getenv(ENV_SERVER_HOST);
+        if (env != null && !env.isBlank()) {
+            return env.trim();
+        }
+        return DEFAULT_SERVER_HOST;
+    }
 }
