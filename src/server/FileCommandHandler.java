@@ -11,6 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
 public class FileCommandHandler {
 
     private final Path serverDir;
@@ -189,7 +190,7 @@ public class FileCommandHandler {
     }
 
 
-    private String handleUpload(String args) throws IOException {
+    private String handleUpload(String cmd) throws IOException {
         // args pritet me qenë:
         // "tessst.txt SGVsbG8AAA..."  (file + base64)
 
@@ -216,23 +217,21 @@ public class FileCommandHandler {
 
 
     private String handleDownload(String cmd) throws IOException {
-        String fileName = getSecondArg(cmd);
+        String fileName = extractSingleArgument(cmd, ServerConfig.CMD_DOWNLOAD);
         if (fileName == null) {
             return "ERR Usage: /download <filename>";
         }
 
-        File file = new File(serverDir, fileName);
-        if (!file.exists() || !file.isFile()) {
+        Path file = resolveWithin(serverDir, fileName);
+        if (!Files.isRegularFile(file)) {
             return "ERR File not found";
         }
+        byte[] bytes = Files.readAllBytes(file);
+        Path copy = resolveWithin(downloadDir, file.getFileName().toString());
+        Files.write(copy, bytes);
+        String payload = Base64.getEncoder().encodeToString(bytes);
 
-        String content = Files.readString(file.toPath());
-
-        // opsionale: e ruan edhe lokal si kopje
-        File copy = new File(downloadDir, fileName);
-        Files.writeString(copy.toPath(), content);
-
-        return "DATA\n" + content;
+        return buildBase64Response(file, bytes, payload);
     }
 
     // ============================
@@ -244,4 +243,106 @@ public class FileCommandHandler {
         if (parts.length < 2) return null;
         return parts[1];
     }
+    private String extractSingleArgument(String cmd, String keyword) {
+        String trimmed = cmd.trim();
+        if (!trimmed.startsWith(keyword)) {
+            return null;
+        }
+        String remainder = trimmed.substring(keyword.length()).trim();
+        if (remainder.isEmpty()) {
+            return null;
+        }
+        return unquote(remainder);
+    }
+    private UploadPayload parseUpload(String cmd) {
+        String trimmed = cmd.trim();
+        if (!trimmed.startsWith(ServerConfig.CMD_UPLOAD)) {
+            return null;
+        }
+        int cursor = ServerConfig.CMD_UPLOAD.length();
+        cursor = skipWhitespace(trimmed, cursor);
+        if (cursor >= trimmed.length()) {
+            return null;
+        }
+        ParseResult fileResult = parseToken(trimmed, cursor);
+        if (fileResult == null) {
+            return null;
+        }
+        cursor = skipWhitespace(trimmed, fileResult.nextIndex());
+        if (cursor >= trimmed.length()) {
+            return null;
+        }
+        String payload = trimmed.substring(cursor);
+        return new UploadPayload(fileResult.token(), payload);
+    }
+    private ParseResult parseToken(String source, int start) {
+        if (source.charAt(start) == '"') {
+            int end = source.indexOf('"', start + 1);
+            if (end <= start) {
+                return null;
+            }
+            return new ParseResult(source.substring(start + 1, end), end + 1);
+        }
+        int end = start;
+        while (end < source.length() && !Character.isWhitespace(source.charAt(end))) {
+            end++;
+        }
+        if (end == start) {
+            return null;
+        }
+        return new ParseResult(source.substring(start, end), end);
+    }
+    private int skipWhitespace(String source, int index) {
+        int cursor = index;
+        while (cursor < source.length() && Character.isWhitespace(source.charAt(cursor))) {
+            cursor++;
+        }
+        return cursor;
+    }
+    private String unquote(String value) {
+        String trimmed = value.trim();
+        if (trimmed.length() >= 2 && trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
+            return trimmed.substring(1, trimmed.length() - 1);
+        }
+        return trimmed;
+    }
+    private Path resolveWithin(Path root, String requested) throws IOException {
+        if (requested == null || requested.isBlank()) {
+            throw new SecurityException("Missing filename");
+        }
+        Path target = root.resolve(requested).normalize();
+        if (!target.startsWith(root)) {
+            throw new SecurityException("Path escapes the allowed directory");
+        }
+        return target;
+    }
+    private Path ensureDir(String path) throws IOException {
+        Path dir = Paths.get(path).toAbsolutePath().normalize();
+        Files.createDirectories(dir);
+        return dir;
+    }
+    private boolean isProbablyText(byte[] data) {
+        for (byte b : data) {
+            int value = b & 0xFF;
+            if (value == 0) {
+                return false;
+            }
+            if (value < 0x08) {
+                return false;
+            }
+        }
+        return true;
+    }
+    private String buildBase64Response(Path file, byte[] bytes, String payload) {
+        String safeName = escapeHeaderValue(file.getFileName().toString());
+        return "DATA_BASE64\nfilename=" + safeName + "\nsize=" + bytes.length + "\n" + payload;
+    }
+    private String escapeHeaderValue(String value) {
+        return value.replace('\n', '_').replace('\r', '_');
+    }
+    private record UploadPayload(String fileName, String base64) {
+    }
+    private record ParseResult(String token, int nextIndex) {
+    }
+
 }
