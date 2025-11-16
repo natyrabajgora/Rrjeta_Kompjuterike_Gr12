@@ -127,21 +127,21 @@ public class FileCommandHandler {
     }
 
     // /info filename
-    private String handleInfo(String cmd) {
-        String fileName = getSecondArg(cmd);
+    private String handleInfo(String cmd) throws IOException {
+        String fileName = extractSingleArgument(cmd, ServerConfig.CMD_INFO);
         if (fileName == null) {
             return "ERR Usage: /info <filename>";
         }
 
-        File file = new File(serverDir, fileName);
-        if (!file.exists() || !file.isFile()) {
+        Path file = resolveWithin(serverDir, fileName);
+        if (!Files.isRegularFile(file)) {
             return "ERR File not found";
         }
 
         StringBuilder sb = new StringBuilder();
-        sb.append("Name: ").append(file.getName()).append("\n");
-        sb.append("Size: ").append(file.length()).append(" bytes\n");
-        sb.append("LastModified: ").append(file.lastModified()).append("\n");
+        sb.append("Name: ").append(file.getFileName()).append("\n");
+        sb.append("Size: ").append(Files.size(file)).append(" bytes\n");
+        sb.append("LastModified: ").append(Files.getLastModifiedTime(file)).append("\n");;
 
         return "DATA\n" + sb;
     }
