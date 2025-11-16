@@ -92,19 +92,18 @@ public class FileCommandHandler {
     // ============================
 
     // /list
-    private String handleList() {
-        StringBuilder sb = new StringBuilder();
-        File[] files = serverDir.listFiles();
-        if (files == null || files.length == 0) {
-            return "DATA\n(no files)";
-        }
-
-        for (File f : files) {
-            if (f.isFile()) {
-                sb.append(f.getName()).append("\n");
+    private String handleList() throws IOException {
+        try (var stream = Files.list(serverDir)) {
+            List<String> files = stream
+                    .filter(Files::isRegularFile)
+                    .map(path -> path.getFileName().toString())
+                    .sorted(Comparator.naturalOrder())
+                    .collect(Collectors.toList());
+            if (files.isEmpty()) {
+                return "DATA\n(no files)";
             }
+            return "DATA\n" + String.join("\n", files);
         }
-        return "DATA\n" + sb;
     }
 
     // /read filename
