@@ -13,6 +13,8 @@ import java.util.concurrent.atomic.AtomicLong;
 import server.ClientSession.Permission;
 import java.util.concurrent.atomic.AtomicInteger;
 import static server.ClientSession.Permission.*;
+import server.TraficMonitor;
+
 
 public class UDPServer {
 
@@ -32,71 +34,10 @@ public class UDPServer {
 
     }
 
-
-    // ================== MONITORIMI I TRAFIKUT ==================
-    public static class TrafficMonitor {
-        private final AtomicLong totalBytesReceived = new AtomicLong(0);
-        private final AtomicLong totalBytesSent = new AtomicLong(0);
-
-        public void addBytesReceived(int bytes) {
-            totalBytesReceived.addAndGet(bytes);
-        }
-
-        public void addBytesSent(int bytes) {
-            totalBytesSent.addAndGet(bytes);
-        }
-
-        public long getTotalBytesReceived() {
-            return totalBytesReceived.get();
-        }
-
-        public long getTotalBytesSent() {
-            return totalBytesSent.get();
-        }
-
-        public String buildStats(Map<SocketAddress, ClientSession> sessions) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("==== SERVER STATS ====\n");
-            sb.append("Timestamp: ").append(Instant.now()).append("\n");
-            sb.append("Active connections: ").append(sessions.size()).append("\n");
-            sb.append("Total bytes received: ").append(getTotalBytesReceived()).append("\n");
-            sb.append("Total bytes sent: ").append(getTotalBytesSent()).append("\n\n");
-
-            for (ClientSession session : sessions.values()) {
-                sb.append("Client: ").append(session.getClientId()).append("\n");
-                sb.append("  Address: ").append(session.getAddress()).append("\n");
-                sb.append("  Permission: ").append(session.getPermission()).append("\n");
-                sb.append("  Last active: ").append(Instant.ofEpochMilli(session.getLastActive())).append("\n");
-                sb.append("  Messages: ").append(session.getMessagesCount()).append("\n");
-                sb.append("  Bytes received: ").append(session.getBytesReceived()).append("\n");
-                sb.append("  Bytes sent: ").append(session.getBytesSent()).append("\n\n");
-            }
-
-            return sb.toString();
-        }
-
-        public void appendStatsToFile(String stats) {
-            ensureLogsDir();
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(Constants.STATS_LOG_FILE, true))) {
-                writer.write(stats);
-                writer.write("\n");
-            } catch (IOException e) {
-                System.err.println("Failed to write stats to file: " + e.getMessage());
-            }
-        }
-
-        private void ensureLogsDir() {
-            File dir = new File(Constants.LOGS_DIR);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-        }
-    }
-
     // ================== FUSHAT E SERVERIT ==================
     private DatagramSocket socket;
     private final Map<SocketAddress, ClientSession> sessions = new ConcurrentHashMap<>();
-    private final TrafficMonitor trafficMonitor = new TrafficMonitor();
+    private final TraficMonitor trafficMonitor = new TraficMonitor();
     private final FileCommandHandler fileCommandHandler = new FileCommandHandler(Constants.SERVER_FILES_DIR, Constants.UPLOADS_DIR, Constants.DOWNLOADS_DIR);
     private final ExecutorService workerPool = Executors.newFixedThreadPool(8);
     private final AtomicInteger activeClientCount = new AtomicInteger(0);
